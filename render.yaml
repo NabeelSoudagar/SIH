@@ -19,7 +19,7 @@ services:
     name: sih-frontend
     env: static
     rootDir: frontend
-    buildCommand: npm install && npm run build
+    buildCommand: npm install && npm run build && mkdir -p dist
     staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
