@@ -8,17 +8,32 @@
 
       <form @submit.prevent="handleLogin" class="auth-form">
         <div class="form-group">
-          <label for="mobile" class="form-label">
-            <i class="fas fa-mobile-alt form-icon"></i>
-            Mobile Number
+          <label for="email" class="form-label">
+            <i class="fas fa-envelope form-icon"></i>
+            Email
           </label>
           <input
-            id="mobile"
-            v-model="mobile"
-            type="tel"
+            id="email"
+            v-model="email"
+            type="email"
             required
             class="form-input"
-            placeholder="Enter your mobile number"
+            placeholder="Enter your Email"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">
+            <i class="fas fa-lock form-icon"></i>
+            Password
+          </label>
+          <input
+            id="password"
+            v-model="password"
+            type="password"
+            required
+            class="form-input"
+            placeholder="Enter your Password"
           />
         </div>
 
@@ -33,7 +48,7 @@
           </select>
         </div>
 
-        <button type="submit" class="auth-button" :disabled="!mobile">
+        <button type="submit" class="auth-button" :disabled="!email || !password">
           <i class="fas fa-sign-in-alt"></i>
           Sign In
         </button>
@@ -55,25 +70,34 @@
 
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../store/auth";
 import axios from "axios";
 
-const mobile = ref("");
+const router = useRouter();
+const authStore = useAuthStore();
+const email = ref("");
+const password = ref("");
 const role = ref("patient");
 const message = ref("");
 
 const handleLogin = async () => {
   try {
-    const res = await axios.post("http://localhost:5000/api/auth/login", {
-      mobile: mobile.value,
+    await authStore.login({
+      email: email.value,
+      password: password.value,
       role: role.value
     });
-
-    // Save logged in user in localStorage (or Pinia/Vuex if using)
-    localStorage.setItem("user", JSON.stringify(res.data.user));
-    localStorage.setItem("role", role.value);
-
-    message.value = res.data.message || "Login successful ✅";
+    
+    message.value = "Login successful ✅";
+    
+    // Redirect to home page after successful login
+    setTimeout(() => {
+      router.push('/');
+    }, 1000);
+    
   } catch (err) {
+    console.error('Login error:', err);
     message.value = err.response?.data?.error || "Login failed ❌";
   }
 };

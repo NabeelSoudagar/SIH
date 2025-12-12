@@ -8,9 +8,15 @@
     <div class="store-list">
       <div v-for="store in stores" :key="store.id" class="store-card">
         <h3>{{ store.name }}</h3>
+        <div class="rating" v-if="store.rating">
+          <span class="stars">⭐ {{ store.rating }}/5</span>
+        </div>
         <p><i class="fas fa-map-marker-alt"></i> {{ store.location }}</p>
         <p><i class="fas fa-phone"></i> {{ store.phone }}</p>
         <p><i class="fas fa-clock"></i> {{ store.hours }}</p>
+        <div class="services" v-if="store.services">
+          <span v-for="service in store.services" :key="service" class="service-tag">{{ service }}</span>
+        </div>
         <div class="delivery-info">
           <span class="delivery-badge">Home Delivery Available</span>
           <span class="delivery-time">Delivery in {{ store.deliveryTime }}</span>
@@ -25,7 +31,9 @@
         <div class="form-group">
           <label for="medicines">Select Medicines</label>
           <select id="medicines" v-model="order.medicines" multiple required>
-            <option v-for="med in medicines" :key="med.name" :value="med.name">{{ med.name }} (Stock: {{ med.stock }})</option>
+            <option v-for="med in medicines" :key="med.name" :value="med.name">
+              {{ med.name }} - ₹{{ med.price }} (Stock: {{ med.stock }}) - {{ med.category }}
+            </option>
           </select>
         </div>
         <div class="form-group">
@@ -64,6 +72,10 @@ const fetchStores = async () => {
     stores.value = res.data;
   } catch (err) {
     console.error('Error fetching stores:', err);
+    // Fallback demo data
+    stores.value = [
+      { id: 1, name: 'Punjab Medical Store', location: 'Amritsar, Punjab', phone: '9876543210', hours: '9 AM - 9 PM', deliveryTime: '2-4 hours', rating: 4.5 }
+    ];
   }
 };
 
@@ -73,6 +85,11 @@ const fetchMedicines = async () => {
     medicines.value = res.data;
   } catch (err) {
     console.error('Error fetching medicines:', err);
+    // Fallback demo data
+    medicines.value = [
+      { name: 'Paracetamol 500mg', stock: 120, price: 25, category: 'Pain Relief' },
+      { name: 'Crocin Advance', stock: 80, price: 30, category: 'Pain Relief' }
+    ];
   }
 };
 
@@ -147,7 +164,32 @@ onMounted(() => {
 
 .store-card h3 {
   color: #3498db;
+  margin-bottom: 0.5rem;
+}
+
+.rating {
   margin-bottom: 1rem;
+}
+
+.stars {
+  color: #f39c12;
+  font-weight: bold;
+}
+
+.services {
+  margin: 1rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.service-tag {
+  background: #ecf0f1;
+  color: #2c3e50;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  border: 1px solid #bdc3c7;
 }
 
 .store-card p {

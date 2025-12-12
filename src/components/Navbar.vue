@@ -2,12 +2,14 @@
   <nav class="navbar">
     <ul>
       <li><RouterLink to="/">{{ $t("Home") }}</RouterLink></li>
-      <li><RouterLink to="/Signup">{{ $t("Signup") }}</RouterLink></li>
+      <li><RouterLink to="/signup">{{ $t("Signup") }}</RouterLink></li>
       <li><RouterLink to="/login">{{ $t("Login") }}</RouterLink></li>
-      <li><RouterLink to="/VideoCall">{{ $t("LiveCall") }}</RouterLink></li>
-      <li><RouterLink to="/patient">{{ $t("PatientDashboard") }}</RouterLink></li>
-      <li><RouterLink to="/doctor">{{ $t("DoctorDashboard") }}</RouterLink></li>
+      <li v-if="isAuthenticated"><RouterLink to="/video-call">{{ $t("LiveCall") }}</RouterLink></li>
+      <li v-if="isAuthenticated && userRole === 'patient'"><RouterLink to="/patient-dashboard">{{ $t("PatientDashboard") }}</RouterLink></li>
+      <li v-if="isAuthenticated && userRole === 'doctor'"><RouterLink to="/doctor-dashboard">{{ $t("DoctorDashboard") }}</RouterLink></li>
       <li><RouterLink to="/medical-store">{{ $t("MedicalStore") }}</RouterLink></li>
+      <li v-if="isAuthenticated && userRole === 'patient'"><RouterLink to="/book-consultation">{{ $t("BookConsultation") }}</RouterLink></li>
+
 
       <!-- Language Buttons -->
       <li class="lang-buttons">
@@ -22,8 +24,33 @@
 <script setup>
 import { RouterLink } from "vue-router"
 import { useI18n } from "vue-i18n"
+import { useAuthStore } from "../store/auth"
+import { computed, watchEffect } from "vue"
 
 const { locale } = useI18n()
+const authStore = useAuthStore()
+
+const isAuthenticated = computed(() => {
+  const hasToken = !!authStore.token
+  console.log('Auth check - hasToken:', hasToken, 'token:', authStore.token)
+  return hasToken
+})
+
+const userRole = computed(() => {
+  const role = authStore.user?.role
+  console.log('Role check - user:', authStore.user, 'role:', role)
+  return role
+})
+
+// Watch for auth changes
+watchEffect(() => {
+  console.log('Auth state changed:', { 
+    isAuthenticated: isAuthenticated.value, 
+    userRole: userRole.value,
+    user: authStore.user,
+    token: authStore.token
+  })
+})
 
 function setLanguage(lang) {
   locale.value = lang

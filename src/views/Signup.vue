@@ -29,7 +29,35 @@
             />
           </div>
 
+          <div class="form-group">
+            <label for="email" class="form-label">
+              <i class="fas fa-envelope form-icon"></i>
+              Email Address
+            </label>
+            <input
+              id="email"
+              v-model="email"
+              type="email"
+              required
+              class="form-input"
+              placeholder="Enter your email address"
+            />
+          </div>
 
+          <div class="form-group">
+            <label for="password" class="form-label">
+              <i class="fas fa-lock form-icon"></i>
+              Password
+            </label>
+            <input
+              id="password"
+              v-model="password"
+              type="password"
+              required
+              class="form-input"
+              placeholder="Create a password"
+            />
+          </div>
 
           <div class="form-group">
             <label for="role" class="form-label">
@@ -68,30 +96,18 @@
             </div>
 
             <div class="form-group">
-              <label for="gender" class="form-label">
-                <i class="fas fa-venus-mars form-icon"></i>
-                Gender
+              <label for="village" class="form-label">
+                <i class="fas fa-map-marker-alt form-icon"></i>
+                Village
               </label>
-              <select id="gender" v-model="profile.gender" class="form-select">
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-              </select>
+              <input
+                id="village"
+                v-model="profile.village"
+                type="text"
+                class="form-input"
+                placeholder="Your village"
+              />
             </div>
-          </div>
-
-          <div class="form-group">
-            <label for="phone" class="form-label">
-              <i class="fas fa-phone form-icon"></i>
-              Phone Number
-            </label>
-            <input
-              id="phone"
-              v-model="profile.phone"
-              type="tel"
-              class="form-input"
-              placeholder="Enter your phone number"
-            />
           </div>
         </div>
 
@@ -116,16 +132,16 @@
           </div>
 
           <div class="form-group">
-            <label for="phone" class="form-label">
-              <i class="fas fa-phone form-icon"></i>
-              Phone Number
+            <label for="registration_no" class="form-label">
+              <i class="fas fa-id-card form-icon"></i>
+              Registration Number
             </label>
             <input
-              id="phone"
-              v-model="profile.phone"
-              type="tel"
+              id="registration_no"
+              v-model="profile.registration_no"
+              type="text"
               class="form-input"
-              placeholder="Enter your phone number"
+              placeholder="Your medical registration number"
             />
           </div>
         </div>
@@ -152,17 +168,21 @@
 
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../store/auth";
 import axios from "axios";
 
+const router = useRouter();
+const authStore = useAuthStore();
 const email = ref("");
 const password = ref("");
 const role = ref("patient");
 const profile = ref({
   name: "",
   age: "",
-  gender: "Male",
-  phone: "",
-  specialization: ""
+  village: "",
+  specialization: "",
+  registration_no: ""
 });
 const message = ref("");
 
@@ -175,6 +195,20 @@ const handleSignup = async () => {
       profile: profile.value
     });
     message.value = res.data.message;
+    
+    // Auto-login after successful signup
+    if (res.data.message.includes('successful')) {
+      await authStore.login({
+        email: email.value,
+        password: password.value,
+        role: role.value
+      });
+      
+      // Redirect to home page after successful signup and login
+      setTimeout(() => {
+        router.push('/');
+      }, 1000);
+    }
   } catch (err) {
     message.value = err.response?.data?.error || "Signup failed";
   }
