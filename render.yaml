@@ -19,8 +19,8 @@ services:
     name: sih-frontend
     env: static
     rootDir: frontend
-    buildCommand: npm install && npm run build && mkdir -p dist
-    staticPublishPath: dist
+    buildCommand: npm ci && npm run build
+    publishPath: ./dist
     envVars:
       - key: VITE_API_URL
         value: https://sih-backend-jbc2.onrender.com
