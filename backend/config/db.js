@@ -1,8 +1,24 @@
-import mysql from "mysql2/promise";
+import { Sequelize } from 'sequelize';
+import dotenv from 'dotenv';
 
-export const db = await mysql.createPool({
-  host: "localhost",
-  user: "root",         // default XAMPP MySQL user
-  password: "",         // leave empty if no password set
-  database: "sih"
+dotenv.config();
+
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+  dialect: 'postgres',
+  logging: false,
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false
+    }
+  },
+  pool: {
+    max: 5,
+    min: 0,
+    acquire: 30000,
+    idle: 10000
+  }
 });
+
+export { sequelize };
+export const db = sequelize;

@@ -1,8 +1,20 @@
-const express = require('express')
-const router = express.Router()
-const consultationController = require('../controllers/consultation.controller')
+// D:/SIH_Project/backend/routes/consultation.routes.js
 
-router.post('/book', consultationController.bookConsultation)
-router.get('/', consultationController.getConsultations)
+import express from 'express';
+import consultationController from '../controllers/consultation.controllers.js';
 
-module.exports = router
+const router = express.Router();
+
+// POST /api/consultations/book
+router.post('/book', consultationController.bookConsultation);
+
+// GET /api/consultations
+router.get('/', consultationController.getConsultations);
+
+// GET /api/consultations/patient
+router.get('/patient', consultationController.getPatientConsultations);
+
+// GET /api/consultations/doctor
+router.get('/doctor', consultationController.getDoctorConsultations);
+
+export default router;

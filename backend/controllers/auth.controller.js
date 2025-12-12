@@ -1,49 +1,123 @@
-import { db } from "../config/db.js";
-import bcrypt from "bcryptjs";
+import { supabase } from "../config/supabase.js";
+import jwt from 'jsonwebtoken';
 
 export const signup = async (req, res) => {
   try {
     const { email, password, role, profile } = req.body;
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    if (!profile?.name || !email || !password || !role) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
 
+    // 1. Insert into users table using Supabase client
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .insert({
+        name: profile.name,
+        email: email,
+        password: password,
+        role: role
+      })
+      .select()
+      .single();
+
+    if (userError) {
+      console.error('User insert error:', userError);
+      return res.status(400).json({ error: "Email already exists or invalid data" });
+    }
+
+    const userId = userData.id;
+
+    // 2. Role-specific inserts
     if (role === "patient") {
-      const [result] = await db.query(
-        "INSERT INTO patients (name, email, password, age, gender, phone) VALUES (?, ?, ?, ?, ?, ?)",
-        [profile.name, email, hashedPassword, profile.age, profile.gender, profile.phone]
-      );
-      return res.json({ message: "Patient registered", id: result.insertId });
+      const { error: patientError } = await supabase
+        .from('patients')
+        .insert({
+          id: userId,
+          full_name: profile.name,
+          age: profile.age || null,
+          village: profile.village || ""
+        });
+
+      if (patientError) {
+        console.error('Patient insert error:', patientError);
+        return res.status(500).json({ error: "Failed to create patient profile" });
+      }
+
+      return res.json({ message: "Patient registered successfully", id: userId });
     }
 
     if (role === "doctor") {
-      const [result] = await db.query(
-        "INSERT INTO doctors (name, email, password, specialization, phone) VALUES (?, ?, ?, ?, ?)",
-        [profile.name, email, hashedPassword, profile.specialization, profile.phone]
-      );
-      return res.json({ message: "Doctor registered", id: result.insertId });
+      const { error: doctorError } = await supabase
+        .from('doctors')
+        .insert({
+          id: userId,
+          full_name: profile.name,
+          specialization: profile.specialization || "",
+          registration_no: profile.registration_no || ""
+        });
+
+      if (doctorError) {
+        console.error('Doctor insert error:', doctorError);
+        return res.status(500).json({ error: "Failed to create doctor profile" });
+      }
+
+      return res.json({ message: "Doctor registered successfully", id: userId });
     }
 
-    res.status(400).json({ error: "Invalid role" });
+    return res.status(400).json({ error: "Invalid role" });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+    console.error("Signup error:", err);
+    return res.status(500).json({ error: "Signup failed" });
   }
 };
 
 export const login = async (req, res) => {
   try {
-    const { mobile, role } = req.body;
+    const { email, password, role } = req.body;
 
-    const table = role === "doctor" ? "doctors" : "patients";
-    const [rows] = await db.query(`SELECT * FROM ${table} WHERE phone = ?`, [mobile]);
+    if (!email || !password || !role) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
 
-    if (rows.length === 0) return res.status(400).json({ error: "User not found" });
+    // Query users table using Supabase client
+    const { data: users, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .eq('role', role)
+      .single();
 
-    const user = rows[0];
+    if (userError || !users) {
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
 
-    res.json({ message: "Login successful", user });
+    // Simple password check (in production, use proper hashing)
+    if (users.password !== password) {
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: users.id, email: users.email, role: users.role },
+      process.env.JWT_SECRET || 'fallback-secret',
+      { expiresIn: '24h' }
+    );
+
+    const user = {
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      role: users.role
+    };
+
+    return res.json({ 
+      message: "Login successful", 
+      user,
+      token
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Login error:", err);
+    return res.status(500).json({ error: "Login failed" });
   }
 };
