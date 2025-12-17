@@ -3,6 +3,8 @@ import { supabase } from "../config/supabase.js";
 export const bookConsultation = async (req, res) => {
   try {
     const { doctor_id, patient_id, scheduledAt } = req.body;
+    
+    console.log('Booking consultation with data:', { doctor_id, patient_id, scheduledAt });
 
     if (!doctor_id || !patient_id || !scheduledAt) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -13,14 +15,14 @@ export const bookConsultation = async (req, res) => {
       .insert({
         doctor_id,
         patient_id,
-        scheduled_at: scheduledAt,
-        status: 'scheduled'
+        scheduled_at: scheduledAt
       })
       .select()
       .single();
 
     if (error) {
-      return res.status(500).json({ error: "Failed to book consultation" });
+      console.error('Supabase error:', error);
+      return res.status(500).json({ error: error.message || "Failed to book consultation" });
     }
 
     return res.json({ 
@@ -29,7 +31,7 @@ export const bookConsultation = async (req, res) => {
     });
   } catch (err) {
     console.error("Error booking consultation:", err);
-    return res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: err.message || "Server error" });
   }
 };
 
