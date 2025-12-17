@@ -1,0 +1,21 @@
+{
+  "welcome": "Welcome to Telemedicine",
+  "login": "Login",
+  "signup": "Sign Up",
+  "doctor": "Doctor",
+  "patient": "Patient",
+  "contact": "Contact Us",
+  "MedicalStore": "Medical Store",
+  "Home": "Home",
+  "Signup": "Sign Up",
+  "Login": "Login",
+  "LiveCall": "Live Call",
+  "PatientDashboard": "Patient Dashboard",
+  "DoctorDashboard": "Doctor Dashboard",
+  "BookConsultation": "Book Consultation",
+  "language": {
+    "english": "English",
+    "hindi": "Hindi",
+    "punjabi": "ਪੰਜਾਬੀ"
+  }
+}
