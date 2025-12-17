@@ -1,0 +1,21 @@
+{
+  "welcome": "ਟੈਲੀਮੇਡਿਸਿਨ ਵਿੱਚ ਸੁਆਗਤ ਹੈ",
+  "login": "ਲਾਗਿਨ",
+  "signup": "ਸਾਈਨ ਅਪ",
+  "doctor": "ਡਾਕਟਰ",
+  "patient": "ਮਰੀਜ਼",
+  "contact": "ਸਾਡੇ ਨਾਲ ਸੰਪਰਕ ਕਰੋ",
+  "MedicalStore": "ਮੈਡੀਕਲ ਸਟੋਰ",
+  "Home": "ਹੋਮ",
+  "Signup": "ਸਾਈਨ ਅਪ",
+  "Login": "ਲਾਗਿਨ",
+  "LiveCall": "ਲਾਈਵ ਕਾਲ",
+  "PatientDashboard": "ਮਰੀਜ਼ ਡੈਸ਼ਬੋਰਡ",
+  "DoctorDashboard": "ਡਾਕਟਰ ਡੈਸ਼ਬੋਰਡ",
+  "BookConsultation": "ਸਲਾਹ ਬੁੱਕ ਕਰੋ",
+  "language": {
+    "english": "ਅੰਗਰੇਜ਼ੀ",
+    "hindi": "ਹਿੰਦੀ",
+    "punjabi": "ਪੰਜਾਬੀ"
+  }
+}
