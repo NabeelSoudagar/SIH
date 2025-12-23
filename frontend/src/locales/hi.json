@@ -1,0 +1,21 @@
+{
+  "welcome": "टेलीमेडिसिन में आपका स्वागत है",
+  "login": "लॉगिन",
+  "signup": "साइन अप",
+  "doctor": "डॉक्टर",
+  "patient": "मरीज़",
+  "contact": "हमसे संपर्क करें",
+  "MedicalStore": "मेडिकल स्टोर",
+  "Home": "होम",
+  "Signup": "साइन अप",
+  "Login": "लॉगिन",
+  "LiveCall": "लाइव कॉल",
+  "PatientDashboard": "मरीज़ डैशबोर्ड",
+  "DoctorDashboard": "डॉक्टर डैशबोर्ड",
+  "BookConsultation": "परामर्श बुक करें",
+  "language": {
+    "english": "अंग्रेज़ी",
+    "hindi": "हिन्दी",
+    "punjabi": "ਪੰਜਾਬੀ"
+  }
+}
